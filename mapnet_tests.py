@@ -16,15 +16,15 @@ def parse_map(input):
     """Convert map encoded as a string (characters: #*.) into a PyTorch array"""
     input = input.split('\n')
     out = t.zeros((3, len(input), len(input[0])))
-    for (y, line) in enumerate(input):
+    for (h, line) in enumerate(input):
         line = line.strip()
-        for (x, ch) in enumerate(line):
+        for (w, ch) in enumerate(line):
             if ch == '#':
-                out[0, y, x] = 1
+                out[0, h, w] = 1
             elif ch == '*':
-                out[1, y, x] = 1
+                out[1, h, w] = 1
             else:
-                out[2, y, x] = 0  # 0.1
+                out[2, h, w] = 0  # 0.1
     return out
 
 
@@ -86,16 +86,16 @@ def visualization_test(vectorization=False):
 
     # get local observations
     obs1 = """.#.
-            .*#
-            ..."""
+              .*#
+              ..."""
 
     obs2 = """.*#
-            .#.
-            .#."""
+              .#.
+              .#."""
 
     obs3 = """#..
-            *#.
-            ..."""
+              *#.
+              ..."""
 
     # shape = (batch=1, time, channels=1, height, width)
     obs = [parse_map(o) for o in (obs1, obs2, obs3)]
@@ -118,8 +118,8 @@ def full_test(exhaustive=True, flip=False, vectorization=False):
 
     # unambiguous map with only 2 identifiable tiles (allows triangulation)
     map = parse_map("""...
-                     *..
-                     ..#""")
+                       *..
+                       ..#""")
 
     # enlarge map by 0-padding
     pad = 3

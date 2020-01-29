@@ -41,13 +41,13 @@ class Mazes(Dataset):
 
         for tries in range(10 * self.seq_length):
             # choose random position (restricted to available choices)
-            x, y = pos[randint(0, pos.shape[0] - 1), :].tolist()
-            assert env[x, y] == 0  # sanity check, tile shouldn't be a wall
+            h, w = pos[randint(0, pos.shape[0] - 1), :].tolist()
+            assert env[h, w] == 0  # sanity check, tile shouldn't be a wall
 
             # choose random orientation
             rot90 = randint(0, 3)
 
-            image = self.agent_view.glob(env, x, y, rot90)
+            image = self.agent_view.glob(env, h, w, rot90)
 
             # accept it if there are enough visible clear tiles
             visible_clear = image[0, :, :]
@@ -57,7 +57,7 @@ class Mazes(Dataset):
 
                 # avoid this position if there are no valid tiles reachable within the max speed (distance from one frame to the next)
                 if self.max_speed:
-                    is_close = ((new_pos - torch.tensor([[x, y]])) ** 2).sum(dim=1) <= self.max_speed ** 2
+                    is_close = ((new_pos - torch.tensor([[h, w]])) ** 2).sum(dim=1) <= self.max_speed ** 2
                     if is_close.sum() == 0:
                         continue
                     new_pos = new_pos[is_close, :]
@@ -65,8 +65,8 @@ class Mazes(Dataset):
                 pos = new_pos
 
                 # store results for this frame
-                images[frame, :, :, :] = extract_view(image, x, y, 2-rot90, self.view_range)
-                poses.append((x, y, pi / 2 * rot90))
+                images[frame, :, :, :] = extract_view(image, h, w, 2-rot90, self.view_range)
+                poses.append((h, w, pi / 2 * rot90))
 
                 frame += 1
                 if frame >= self.seq_length: break  # done

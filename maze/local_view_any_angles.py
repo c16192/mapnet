@@ -31,10 +31,10 @@ def get_partially_observable_pixels(square_patch, angle_ranges, split_required=T
     """
     if split_required:
         angle_ranges = split_angle_ranges(angle_ranges)
-    x, y = square_patch.shape
-    assert x == y and x % 2 == 1
+    h, w = square_patch.shape
+    assert h == w and h % 2 == 1
     # map of visible pixels to be returned
-    visible_patch = torch.zeros(2, x, y, dtype=torch.long)
+    visible_patch = torch.zeros(2, h, w, dtype=torch.long)
     if square_patch.shape == (1, 1):
         visible_patch[0, 0, 0] = 1
         return visible_patch, angle_ranges
@@ -42,12 +42,12 @@ def get_partially_observable_pixels(square_patch, angle_ranges, split_required=T
     visible_patch[:, 1:-1, 1:-1], angle_ranges =\
         get_partially_observable_pixels(square_patch[1:-1, 1:-1], angle_ranges, split_required=False)
 
-    visible_patch, angle_ranges = update_visiblility(square_patch, visible_patch, angle_ranges, x / 2 - 1, y)
-    visible_patch, angle_ranges = update_visiblility(square_patch, visible_patch, angle_ranges, x / 2, y)
+    visible_patch, angle_ranges = update_visiblility(square_patch, visible_patch, angle_ranges, h / 2 - 1, w)
+    visible_patch, angle_ranges = update_visiblility(square_patch, visible_patch, angle_ranges, h / 2, w)
     return visible_patch, angle_ranges
 
 
-def update_visiblility(square_patch, visible_patch, angle_ranges, r, y):
+def update_visiblility(square_patch, visible_patch, angle_ranges, u, v):
     new_angle_range = []
 
     for ang_sm, ang_lg, side in angle_ranges:
@@ -58,7 +58,7 @@ def update_visiblility(square_patch, visible_patch, angle_ranges, r, y):
 
         # update strip visibility
         square_patch[-1, :], visible_patch[:, -1, :], strip_ang_ranges\
-            = eval_strip_visibility(square_patch[-1, :], visible_patch[:, -1, :], ang_sm - rotate, ang_lg - rotate, r, y)
+            = eval_strip_visibility(square_patch[-1, :], visible_patch[:, -1, :], ang_sm - rotate, ang_lg - rotate, u, v)
 
         # rotate back to original angle
         new_angle_range += [(s + rotate, l + rotate, side) for s, l in strip_ang_ranges]
@@ -67,23 +67,23 @@ def update_visiblility(square_patch, visible_patch, angle_ranges, r, y):
     return visible_patch, new_angle_range
 
 
-def eval_strip_visibility(map_strip, visible_strip, ang_sm, ang_lg, r, y):
+def eval_strip_visibility(map_strip, visible_strip, ang_sm, ang_lg, u, v):
     new_angle_range = []
     new_ang_sm = None
     for i in range(
-            max(0, floor(y / 2 + r * tan(ang_sm))),
-            min(int(y / 2 + r), ceil(y / 2 + r * tan(ang_lg)))
+            max(0, floor(v / 2 + u * tan(ang_sm))),
+            min(int(v / 2 + u), ceil(v / 2 + u * tan(ang_lg)))
     ):
         if not map_strip[i]:
             # visible clear spaces
             visible_strip[0, i] = 1
             if new_ang_sm is None:
-                new_ang_sm = max(ang_sm, atan((i - y / 2) / r))
+                new_ang_sm = max(ang_sm, atan((i - v / 2) / u))
         else:
             # visible walls
             visible_strip[1, i] = 1
             if new_ang_sm is not None:
-                new_arg_lg = min(ang_lg, atan((i - y / 2) / r))
+                new_arg_lg = min(ang_lg, atan((i - v / 2) / u))
                 new_angle_range.append((new_ang_sm, new_arg_lg))
                 new_ang_sm = None
 

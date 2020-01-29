@@ -15,10 +15,10 @@ class AgentViewRayCast(AgentView):
         visible_patch = raycast(rays, square_patch, (h - 1) // 2, (w - 1) // 2)
         return visible_patch
 
-    def glob(self, env, x, y, ang90):
+    def glob(self, env, h, w, ang90):
         # project rays that position/orientation
         rays = self.rays_for_angles[ang90]
-        image = raycast(rays, env, x, y)
+        image = raycast(rays, env, h, w)
         return image
 
 
@@ -70,13 +70,13 @@ def bresenham_line(x, y, x2, y2):
     return coords
 
 
-def raycast(rays, env, x, y):
+def raycast(rays, env, h, w):
     """Raycast in an environment to black-out any non-visible tiles"""
     image = torch.zeros((2, env.shape[0], env.shape[1]))
     for ray in rays:
         # assert isinstance(ray, tuple)
-        for (rx, ry) in ray:
-            v = int(env[x + rx, y + ry].item())
-            image[v, x + rx, y + ry] = 1
+        for (rh, rw) in ray:
+            v = int(env[h + rh, w + rw].item())
+            image[v, h + rh, w + rw] = 1
             if v: break  # hit a wall
     return image
