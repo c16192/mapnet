@@ -1,4 +1,7 @@
-data/maze/mazes-10-10-100000.txt
+.idea
+data
+!data/mazes-10-10-100000.zip
 data/mapnet
+sandbox
 __pycache__
 .vscode
