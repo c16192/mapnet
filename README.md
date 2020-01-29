@@ -30,7 +30,7 @@ Plots and tensor visualizations (mostly heatmaps of the joint position-orientati
 ![Screenshot](https://github.com/jotaf98/mapnet/raw/master/data/screenshot.png)
 
 
-# Author
-
+### Author
 [João F. Henriques](http://www.robots.ox.ac.uk/~joao/)
-
+### Edited
+Shu Ishida
