@@ -12,8 +12,7 @@ from maze.loader import load_envs_from_txt_file
 class Mazes(Dataset):
     """Dataset of 2D mazes, simulating local view with occlusions. The view is returned as a Bx2xHxW byte tensor."""
 
-    def __init__(self, envs, view_range=5, seq_length=5, clear_threshold=3, no_rotation=False,
-                 max_speed=0):
+    def __init__(self, envs, view_range=5, seq_length=5, clear_threshold=3, max_speed=0):
 
         self.envs = envs
         self.view_range = view_range

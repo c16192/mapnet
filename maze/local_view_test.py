@@ -1,5 +1,6 @@
-from maze.local_view import bresenham_line, get_rays, raycast, split_angle_ranges, \
+from maze.local_view import split_angle_ranges, \
     get_partially_observable_pixels, embed_view, AgentViewAnyAngles
+from maze.local_view_raycast import bresenham_line, get_rays, raycast
 import torch
 from math import pi
 
